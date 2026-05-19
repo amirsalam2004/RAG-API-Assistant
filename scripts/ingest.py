@@ -1,7 +1,7 @@
 import json
 import requests
 
-# 1. Extract Swagger from JS
+# Extract Swagger from JS
 def extract_swagger_from_js(js_text):
     start_key = '"swaggerDoc"'
     start = js_text.find(start_key)
@@ -29,7 +29,7 @@ def extract_swagger_from_js(js_text):
     return json.loads(swagger_str)
 
 
-# 2. Extract endpoints
+# Extract endpoints
 def extract_endpoints(swagger):
     endpoints = []
 
@@ -71,3 +71,47 @@ def extract_endpoints(swagger):
                 })
 
     return endpoints
+
+# Resolve schema reference
+def resolve_ref(ref, schemas):
+    name = ref.split("/")[-1]
+    return schemas.get(name, {})
+
+
+# Convert schema → text
+def schema_to_text(schema, schemas, depth=0):
+    if not schema or depth > 2:
+        return ""
+
+    props = schema.get("properties", {})
+    lines = []
+
+    for name, value in props.items():
+
+        typ = value.get("type", "")
+        desc = value.get("description", "")
+        nullable = value.get("nullable", False)
+
+        line = f"- {name} ({typ})"
+
+        if nullable:
+            line += " [nullable]"
+
+        if desc:
+            line += f": {desc}"
+
+        # nested object
+        if "$ref" in value:
+            nested = resolve_ref(value["$ref"], schemas)
+            line += "\n  " + schema_to_text(nested, schemas, depth + 1)
+
+        # array items
+        if typ == "array":
+            items = value.get("items", {})
+            if "$ref" in items:
+                nested = resolve_ref(items["$ref"], schemas)
+                line += "\n  items:\n" + schema_to_text(nested, schemas, depth + 1)
+
+        lines.append(line)
+
+    return "\n".join(lines)
