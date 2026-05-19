@@ -1,15 +1,19 @@
 from data import build_vector_documents
 from sentence_transformers import SentenceTransformer
 import chromadb
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class VectorDB:
 
     def __init__(
         self,
-        db_path="./chroma_db",
-        collection_name="api_docs",
-        embedding_model_name="all-MiniLM-L6-v2"
+        db_path=os.getenv("VECTOR_DB_PATH", "./chroma_db"),
+        collection_name=os.getenv("COLLECTION_NAME", "api_docs"),
+        embedding_model_name=os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
     ):
         # --- embedding model ---
         self.embedding_model = SentenceTransformer(embedding_model_name)
