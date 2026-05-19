@@ -1,4 +1,4 @@
-from data import build_vector_documents
+from scripts.ingest import build_vector_documents
 from sentence_transformers import SentenceTransformer
 import chromadb
 import os
