@@ -115,3 +115,99 @@ def schema_to_text(schema, schemas, depth=0):
         lines.append(line)
 
     return "\n".join(lines)
+
+# Build semantic document
+def build_document(api, schemas):
+
+    parts = []
+
+    # 1. Header (VERY IMPORTANT)
+    parts.append(f"""
+    API: {api['method'].upper()} {api['path']}
+    Purpose: {api.get('summary', '')}
+    Category: {', '.join(api.get('tags', []))}
+    OperationId: {api.get('operationId', '')}
+    """)
+
+    # 2. Path semantics
+    parts.append("Path context: " + api["path"].replace("/", " "))
+
+    # 3. Query / path parameters
+    if api.get("parameters"):
+        parts.append("Parameters:")
+
+        for p in api["parameters"]:
+            parts.append(f"- {p['name']}: {p.get('description', '')}")
+
+    # 4. Request body schema
+    request_body = api.get("requestBody", {})
+    content = request_body.get("content", {})
+
+    if "application/json" in content:
+        schema = content["application/json"].get("schema", {})
+
+        if "$ref" in schema:
+            ref_schema = resolve_ref(schema["$ref"], schemas)
+
+            parts.append("Request body:")
+            parts.append(schema_to_text(ref_schema, schemas))
+
+    # 5. Responses
+    if api.get("responses"):
+        parts.append("Responses:")
+
+        for code, res in api["responses"].items():
+            parts.append(f"- {code}: {res.get('description', '')}")
+
+ # 6. Keyword boosting (with operationId)
+    # keywords = [
+    #     api.get("summary", ""),
+    #     api["path"],
+    #     " ".join(api.get("tags", []))
+    # ]
+    
+    # if api.get('operationId'):
+    #     keywords.append(api['operationId'])
+    
+    # parts.append("Keywords: " + " ".join(keywords))
+    parts.append(
+        "Keywords: "
+        + api.get("summary", "")
+        + " "
+        + api["path"]
+        + " "
+        + " ".join(api.get("tags", []))
+    )
+    
+    return "\n".join(parts)
+
+
+# 6. Full pipeline
+def build_vector_documents(url):
+    response = requests.get(url)
+
+    js_text = response.text
+
+    swagger = extract_swagger_from_js(js_text)
+
+    schemas = swagger.get("components", {}).get("schemas", {})
+    # print(type(swagger)) #debug
+    # print(swagger.keys()) #debug
+    endpoints = extract_endpoints(swagger)
+
+    documents = []
+
+    for api in endpoints:
+        doc = build_document(api, schemas)
+
+        documents.append({
+            "text": doc,
+            "metadata": {
+                "path": api["path"],
+                "method": api["method"],
+                "summary": api.get("summary", ""),
+                "operationId": api.get("operationId", "")
+            }
+        })
+
+    return documents
