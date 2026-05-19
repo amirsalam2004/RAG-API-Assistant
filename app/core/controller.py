@@ -30,3 +30,13 @@ def run(state, vectordb, user_input):
 
         # 5. Decision
         decision = decide(state)
+
+        if decision["status"] == "success":
+            return decision["result"]
+
+        elif decision["status"] == "clarify":
+            return decision["question"]
+
+        state.retry_count += 1
+
+    return "No suitable results were found after multiple attempts. Please try rephrasing your request or providing more details."
