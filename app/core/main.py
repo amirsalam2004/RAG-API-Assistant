@@ -14,3 +14,13 @@ def main():
     vectordb.ingest_from_url(openapi_url)
 
     state = AgentState()
+
+    while True:
+        user_input = input("User: ")
+
+        response = run(state, vectordb, user_input)
+
+        print("Assistant:\n", response)
+
+if __name__ == "__main__":
+    main()
