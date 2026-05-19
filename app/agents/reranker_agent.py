@@ -16,7 +16,14 @@ def reranker_agent(state):
       {{"id": 1, "score": 0.9}}
     ]
     """
-    
+
     response = llm_call(prompt)
 
     ranked = json.loads(response)
+
+    ranked = sorted(ranked, key=lambda x: x["score"], reverse=True)
+
+    state.ranked = ranked
+    state.phase = "decision"
+
+    return state
