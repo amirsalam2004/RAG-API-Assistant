@@ -30,3 +30,10 @@ def build_query(state):
     Conversation:
     {format_messages(state.messages)}
 """
+    
+    query = llm_call(prompt)
+
+    state.search_query = query
+    state.phase = "searching"
+
+    return state
