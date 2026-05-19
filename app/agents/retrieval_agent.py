@@ -1,4 +1,13 @@
 import re
+from dotenv import load_dotenv
+import os
+import urllib.parse
+load_dotenv()
+
+def build_swagger_url(category, operation_id):
+    categoryURL=urllib.parse.quote(category, safe='')
+    swaggerURL=os.getenv("SWAGGER_URL")
+    return(swaggerURL+categoryURL+"/"+operation_id)
 
 def parse_document(doc, meta, idx):
 
@@ -52,6 +61,7 @@ def parse_document(doc, meta, idx):
         "path": path,
         "purpose": purpose,
         "category": category,
+        "URL": build_swagger_url(category, operation_id),
         "request_body": request_body,
         "responses": responses,
         "keywords": keywords,
