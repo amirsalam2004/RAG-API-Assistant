@@ -2,6 +2,7 @@ import re
 from dotenv import load_dotenv
 import os
 import urllib.parse
+
 load_dotenv()
 
 def build_swagger_url(category, operation_id):
@@ -68,6 +69,7 @@ def parse_document(doc, meta, idx):
     }
 
 
+
 def retrieval_agent(state, vectordb):
 
     raw_results = vectordb.search(state.search_query)
@@ -81,4 +83,7 @@ def retrieval_agent(state, vectordb):
         parsed = parse_document(doc, meta, i)
         candidates.append(parsed)
 
-    return candidates
+    state.candidates = candidates
+    state.phase = "ranking"
+
+    return state
