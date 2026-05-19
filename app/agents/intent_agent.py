@@ -36,3 +36,11 @@ def intent_agent(state):
     Output nothing but JSON
 
 """
+    response = llm_call(prompt)
+
+    try:
+        intent = json.loads(response.strip())
+    except json.JSONDecodeError as e:
+        print(f"JSON Parse Error: {e}")
+
+    return intent
