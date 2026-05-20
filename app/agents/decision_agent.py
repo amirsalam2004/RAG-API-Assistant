@@ -1,3 +1,20 @@
+#Converting API information to a string
+def format_api_information(results):
+    formated = ""
+    for api in results:
+        formated+=f"""
+        ###############################################\n  
+        Method: {api['method']}\n
+        Path: {api["path"]}\n
+        Purpose: {api["purpose"]}\n
+        Category: {api["category"]}\n      
+        URL: {api["URL"]}\n
+        Score: {api["score"]}\n
+        ###############################################\n  
+        """
+    return formated
+
+
 def decide(state):
 
     if not state.ranked:
@@ -27,25 +44,17 @@ def decide(state):
         if not candidate:
             continue
 
-        # results.append({
-        #     "method": candidate["method"],
-        #     "path": candidate["path"],
-        #     "purpose": candidate["purpose"],
-        #     "category": candidate["category"],
-        #     "URL": candidate["URL"],
-        #     "score": score
-        # })
-        results+=f"""
-        ###############################################\n     #for debugging only, not for production
-        Method: {candidate['method']}\n
-        Path: {candidate["path"]}\n
-        Purpose: {candidate["purpose"]}\n
-        Category: {candidate["category"]}\n      
-        URL: {candidate["URL"]}\n
-        Score: {score}\n
-        """
+        results.append({
+            "method": candidate["method"],
+            "path": candidate["path"],
+            "purpose": candidate["purpose"],
+            "category": candidate["category"],
+            "URL": candidate["URL"],
+            "score": score
+        })
+        api_informagtion= format_api_information(results)
 
     return {
         "status": "success",
-        "result": results
+        "result": api_informagtion        #It should be a list, for debuging return string first
     }    
