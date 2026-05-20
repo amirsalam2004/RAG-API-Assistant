@@ -54,6 +54,9 @@ def decide(state):
         })
         api_informagtion= format_api_information(results)
 
+        # store APIs information in user-assistant conversation in state
+        state.messages.append({"role": "Assistant", "content": "APIs to suit your needs:\n"+api_informagtion})
+
     return {
         "status": "success",
         "result": api_informagtion        #It should be a list, for debuging return string first

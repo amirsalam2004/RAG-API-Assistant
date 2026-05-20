@@ -15,7 +15,7 @@ def run(state, vectordb, user_input):
         intent = intent_agent(state)
 
         if not intent["complete"]:
-            state.messages.append({"role": "assistant", "content": intent["question"]})
+            state.messages.append({"role": "Assistant", "content": intent["question"]})
             return intent["question"]
         
 
