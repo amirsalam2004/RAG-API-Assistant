@@ -12,5 +12,3 @@ class AgentState:
         self.search_query = None
         self.candidates = []
         self.ranked = []
-
-        self.retry_count = 0

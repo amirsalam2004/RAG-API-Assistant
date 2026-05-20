@@ -17,9 +17,6 @@ def format_api_information(results):
 
 def decide(state):
 
-    if not state.ranked:
-        return {"status": "retry"}
-
     candidates_map = {c["id"]: c for c in state.candidates}
 
     best = state.ranked[0]
@@ -30,13 +27,13 @@ def decide(state):
         }
     
 
-    results =""
+    results = []
 
     for item in state.ranked:
         cid = item["id"]
         score = item["score"]
         
-        if score < 0.7:
+        if score < 0.6:   #0.6 or 0.7 can be a threshold to filter out low-score candidates, it can be tuned later
             continue
 
         candidate = candidates_map.get(cid)
