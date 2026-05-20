@@ -1,5 +1,4 @@
-from core import state
-from services.llm_service import llm_call, format_messages
+from app.services.llm_service import llm_call, format_messages
 
 def build_query(state):
     prompt = f"""

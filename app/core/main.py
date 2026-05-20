@@ -1,6 +1,6 @@
-from core.state import AgentState
-from core.controller import run
-from services.vector_db_service import VectorDB
+from app.core.state import AgentState
+from app.core.controller import run
+from app.services.vector_db_service import VectorDB
 import os
 from dotenv import load_dotenv
 

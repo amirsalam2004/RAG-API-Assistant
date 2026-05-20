@@ -13,7 +13,7 @@ def decide(state):
         }
     
 
-    results =[]
+    results =""
 
     for item in state.ranked:
         cid = item["id"]
@@ -27,23 +27,23 @@ def decide(state):
         if not candidate:
             continue
 
-        results.append({
-            "method": candidate["method"],
-            "path": candidate["path"],
-            "purpose": candidate["purpose"],
-            "category": candidate["category"],
-            "URL": candidate["URL"],
-            "score": score
-        })
-        # results+=f"""
-        # ###############################################\n     #for debugging only, not for production
-        # Method: {candidate['method']}\n
-        # Path: {candidate["path"]}\n
-        # Purpose: {candidate["purpose"]}\n
-        # Category: {candidate["category"]}\n      
-        # URL: {candidate["URL"]}\n
-        # Score: {score}\n
-        # """
+        # results.append({
+        #     "method": candidate["method"],
+        #     "path": candidate["path"],
+        #     "purpose": candidate["purpose"],
+        #     "category": candidate["category"],
+        #     "URL": candidate["URL"],
+        #     "score": score
+        # })
+        results+=f"""
+        ###############################################\n     #for debugging only, not for production
+        Method: {candidate['method']}\n
+        Path: {candidate["path"]}\n
+        Purpose: {candidate["purpose"]}\n
+        Category: {candidate["category"]}\n      
+        URL: {candidate["URL"]}\n
+        Score: {score}\n
+        """
 
     return {
         "status": "success",
