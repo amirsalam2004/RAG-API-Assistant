@@ -38,33 +38,49 @@ def _category_badge(category: str) -> str:
 def _card_html(api: dict, is_best: bool) -> str:
     border   = "2px solid #f9a825" if is_best else "1px solid #e0e0e0"
     bg       = "#fffde7"           if is_best else "#ffffff"
+
     best_tag = (
         "<div style='font-size:11px;font-weight:700;color:#f9a825;"
         "letter-spacing:1px;margin-bottom:8px;'>&#11088; BEST MATCH</div>"
         if is_best else ""
     )
+
     score_pct = int(api["score"] * 100)
+
     return (
         f'<div style="border:{border};border-radius:10px;padding:16px 20px;'
-        f'margin-bottom:16px;background:{bg};box-shadow:0 1px 5px rgba(0,0,0,0.08);">'
+        f'margin-bottom:16px;background:{bg};box-shadow:0 1px 5px rgba(0,0,0,0.08);'
+        f'color:#212121;">' 
+
         f'{best_tag}'
+
         f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
         f'{_method_badge(api["method"])}'
-        f'<span style="font-family:monospace;font-size:15px;font-weight:600;">{api["path"]}</span>'
+        f'<span style="font-family:monospace;font-size:15px;font-weight:600;color:#212121;">'
+        f'{api["path"]}</span>'
         f'</div>'
-        f'<div style="color:#888;font-size:14px;margin-bottom:10px;">{api["purpose"]}</div>'
+
+        f'<div style="color:#424242;font-size:14px;margin-bottom:10px;">'
+        f'{api["purpose"]}</div>'
+
         f'<div style="margin-bottom:12px;">{_category_badge(api["category"])}</div>'
-        f'<div style="font-size:13px;margin-bottom:6px;"><strong>Match score:</strong> {score_pct}%</div>'
+
+        f'<div style="font-size:13px;margin-bottom:6px;color:#212121;">'
+        f'<strong>Match score:</strong> {score_pct}%</div>'
+
         f'<div style="background:#e0e0e0;border-radius:6px;height:8px;margin-bottom:12px;">'
-        f'<div style="background:#1976d2;width:{score_pct}%;height:8px;border-radius:6px;"></div></div>'
+        f'<div style="background:#1976d2;width:{score_pct}%;height:8px;border-radius:6px;"></div>'
+        f'</div>'
+
         f'<a href="{api["URL"]}" target="_blank" '
-        f'style="display:inline-block;padding:7px 16px;border:1px solid #ccc;'
-        f'border-radius:6px;font-size:13px;text-decoration:none;color:inherit;">'
+        f'style="display:inline-block;padding:8px 16px;'
+        f'background:#263238;color:#ffffff;'
+        f'border-radius:6px;font-size:13px;font-weight:500;'
+        f'text-decoration:none;">'
         f'View Swagger Docs &#8599;</a>'
+
         f'</div>'
     )
-
-
 
 def _render_api_cards(results: list):
     # Single st.markdown call — avoids Streamlit's per-call HTML sanitisation bug
