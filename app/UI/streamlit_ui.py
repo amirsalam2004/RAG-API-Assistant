@@ -34,35 +34,33 @@ def _category_badge(category: str) -> str:
         f'border-radius:4px;font-size:12px;font-weight:500;">{category}</span>'
     )
 
+
 def _render_api_cards(results: list):
     for i, api in enumerate(results):
-        # st.write(type(api), api)
-        is_best   = (i == 0)
-        border    = "2px solid #f9a825" if is_best else "1px solid #e0e0e0"
-        bg        = "#fffde7"           if is_best else "#ffffff"
-        best_tag  = (
+        is_best = (i == 0)
+        
+        border = "2px solid #f9a825" if is_best else "1px solid #e0e0e0"
+        bg = "#fffde7" if is_best else "#ffffff"
+        best_tag = (
             "<div style='font-size:11px;font-weight:700;color:#f9a825;"
             "letter-spacing:1px;margin-bottom:8px;'>⭐ BEST MATCH</div>"
             if is_best else ""
         )
 
-        st.markdown(
-            f"""<div style="border:{border};border-radius:10px;padding:16px 20px;
-                        margin-bottom:4px;background:{bg};
-                        box-shadow:0 1px 5px rgba(0,0,0,0.08);">
-                {best_tag}
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    {_method_badge(api['method'])}
-                    <span style="font-family:monospace;font-size:15px;
-                                 font-weight:600;color:#212121;">{api['path']}</span>
-                </div>
-                <div style="color:#555;font-size:14px;margin-bottom:8px;">
-                    {api['purpose']}
-                </div>
-                <div>{_category_badge(api['category'])}</div>
-            </div>""",
-            unsafe_allow_html=True,
+        card_html = (
+            f'<div style="border:{border}; border-radius:10px; padding:16px 20px; '
+            f'margin-bottom:4px; background:{bg}; box-shadow:0 1px 5px rgba(0,0,0,0.08);">'
+            f'{best_tag}'
+            f'<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">'
+            f'{_method_badge(api["method"])}'
+            f'<span style="font-family:monospace; font-size:15px; font-weight:600; color:#212121;">{api["path"]}</span>'
+            f'</div>'
+            f'<div style="color:#555; font-size:14px; margin-bottom:8px;">{api["purpose"]}</div>'
+            f'<div>{_category_badge(api["category"])}</div>'
+            f'</div>'
         )
+
+        st.markdown(card_html, unsafe_allow_html=True)
 
         score_pct = int(api["score"] * 100)
         st.markdown(f"**Match score:** {score_pct}%")
