@@ -6,35 +6,48 @@ from app.agents.decision_agent import decide
 
 
 def run(state, vectordb, user_input):
+    """
+    Generator pipeline.
+    Yields: {"type": "status", "message": str}
+    Yields: {"type": "result",  "data":    str | list}
+    """
 
     state.messages.append({"role": "User", "content": user_input})
 
     # 1. Intent
+    yield {"type": "status", "message": "🔍 Understanding your request..."}
     intent = intent_agent(state)
 
     if not intent["complete"]:
         state.messages.append({"role": "Assistant", "content": intent["question"]})
-        return intent["question"]
-    
+        yield {"type": "result", "data": intent["question"]}
+        return
 
     # 2. Query
+    yield {"type": "status", "message": "🛠️ Building search query..."}
     state = build_query(state)
 
     # 3. Retrieval
+    yield {"type": "status", "message": "🔎 Searching APIs..."}
     state = retrieval_agent(state, vectordb)
 
     # 4. Rerank
+    yield {"type": "status", "message": "📊 Ranking results..."}
     state = reranker_agent(state)
 
     # 5. Decision
+    yield {"type": "status", "message": "✅ Preparing final answer..."}
     decision = decide(state)
 
     if decision["status"] == "success":
-        return decision["result"]
+        yield {"type": "result", "data": decision["result"]}
 
     elif decision["status"] == "clarify":
-        state.messages.append({"role": "Assistant", "content": "No suitable results were found. Please try rephrasing your request or providing more details."})
-        return "No suitable results were found after multiple attempts. Please try rephrasing your request or providing more details."
+        msg = "No suitable results were found. Please try rephrasing your request or providing more details."
+        state.messages.append({"role": "Assistant", "content": msg})
+        yield {"type": "result", "data": msg}
+
     else:
-        state.messages.append({"role": "Assistant", "content": "An error occurred while processing your request. Please try again later."})
-        return "An error occurred while processing your request. Please try again later."
+        msg = "An error occurred while processing your request. Please try again later."
+        state.messages.append({"role": "Assistant", "content": msg})
+        yield {"type": "result", "data": msg}
