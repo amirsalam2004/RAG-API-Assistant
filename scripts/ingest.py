@@ -2,6 +2,7 @@ import json
 import requests
 
 # Extract Swagger from JS
+# If the APIs information was in a js file instead of the openapi.json file, this function could be used.
 def extract_swagger_from_js(js_text):
     start_key = '"swaggerDoc"'
     start = js_text.find(start_key)
@@ -182,13 +183,13 @@ def build_document(api, schemas):
     return "\n".join(parts)
 
 
-# 6. Full pipeline
+# Full pipeline
 def build_vector_documents(url):
+
     response = requests.get(url)
 
-    js_text = response.text
+    swagger = response.json()
 
-    swagger = extract_swagger_from_js(js_text)
 
     schemas = swagger.get("components", {}).get("schemas", {})
     # print(type(swagger)) #debug
