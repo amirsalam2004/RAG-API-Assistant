@@ -163,17 +163,7 @@ def build_document(api, schemas):
         for code, res in api["responses"].items():
             parts.append(f"- {code}: {res.get('description', '')}")
 
- # 6. Keyword boosting (with operationId)
-    # keywords = [
-    #     api.get("summary", ""),
-    #     api["path"],
-    #     " ".join(api.get("tags", []))
-    # ]
-    
-    # if api.get('operationId'):
-    #     keywords.append(api['operationId'])
-    
-    # parts.append("Keywords: " + " ".join(keywords))
+    # 6. Keyword boosting
     parts.append(
         "Keywords: "
         + api.get("summary", "")
@@ -207,10 +197,8 @@ def build_vector_documents(url):
         documents.append({
             "text": doc,
             "metadata": {
-                "path": api["path"],
                 "method": api["method"],
-                "summary": api.get("summary", ""),
-                "operationId": api.get("operationId", "")
+                "path": api["path"]
             }
         })
 
