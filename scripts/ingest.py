@@ -52,6 +52,7 @@ def extract_endpoints(swagger):
                             "method": method,
                             "operationId": item.get("operationId", ""),
                             "summary": item.get("summary", ""),
+                            "description": item.get("description", ""),
                             "tags": item.get("tags", []),
                             "parameters": item.get("parameters", []),
                             "requestBody": item.get("requestBody", {}),
@@ -65,6 +66,7 @@ def extract_endpoints(swagger):
                     "method": method,
                     "operationId": data.get("operationId", ""),
                     "summary": data.get("summary", ""),
+                    "description": data.get("description", ""),
                     "tags": data.get("tags", []),
                     "parameters": data.get("parameters", []),
                     "requestBody": data.get("requestBody", {}),
@@ -122,13 +124,14 @@ def build_document(api, schemas):
 
     parts = []
 
-    # 1. Header (VERY IMPORTANT)
-    parts.append(f"""
-    API: {api['method'].upper()} {api['path']}
-    Purpose: {api.get('summary', '')}
-    Category: {', '.join(api.get('tags', []))}
-    OperationId: {api.get('operationId', '')}
-    """)
+    # 1. Header
+    parts.append(
+        f"API: {api['method'].upper()} {api['path']}\n"
+        f"Purpose: {api.get('summary', '')}\n"
+        f"Description: {api.get('description', '')}\n"
+        f"Category: {', '.join(api.get('tags', []))}\n"
+        f"OperationId: {api.get('operationId', '')}"
+    )
 
     # 2. Path semantics
     parts.append("Path context: " + api["path"].replace("/", " "))
