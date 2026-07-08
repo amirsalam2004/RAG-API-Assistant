@@ -45,6 +45,7 @@ def decide(state):
             "method": candidate["method"],
             "path": candidate["path"],
             "purpose": candidate["purpose"],
+            "description": candidate["description"],
             "category": candidate["category"],
             "URL": candidate["URL"],
             "score": score

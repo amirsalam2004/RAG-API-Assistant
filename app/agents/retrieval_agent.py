@@ -10,6 +10,8 @@ def build_swagger_url(category, operation_id):
     swaggerURL=os.getenv("SWAGGER_URL")
     return(swaggerURL+categoryURL+"/"+operation_id)
 
+
+
 def parse_document(doc, meta, idx):
 
     lines = doc.strip().split("\n")
@@ -29,30 +31,28 @@ def parse_document(doc, meta, idx):
             method = meta.get("method", "UNKNOWN")
             path = meta.get("path", first_line)
 
-    # --- 2. purpose ---
-    purpose_match = re.search(r"Purpose:\s*(.*)", doc)
-    purpose = purpose_match.group(1).strip() if purpose_match else ""
+    # purpose 
+    purpose = meta.get("purpose", "")
+    # description
+    description = meta.get("description", "")
+    # category 
+    category = meta.get("category", "")
+    # operation ID 
+    operation_id = meta.get("operationId", "")
 
-    # --- 3. category ---
-    category_match = re.search(r"Category:\s*(.*)", doc)
-    category = category_match.group(1).strip() if category_match else ""
 
-    # --- 4. operation ID ---
-    operation_id_match = re.search(r"OperationId:\s*(.*)", doc)
-    operation_id = operation_id_match.group(1).strip() if operation_id_match else ""
-
-    # --- 5. request body ---
+    # request body 
     body_matches = re.findall(r"- (\w+) \((.*?)\)", doc)
     request_body = [
         {"name": name, "type": typ}
         for name, typ in body_matches
     ]
 
-    # --- 6. responses ---
+    # responses 
     response_matches = re.findall(r"- (\d+):", doc)
     responses = [int(r) for r in response_matches]
 
-    # --- 7. keywords ---
+    # keywords 
     keyword_match = re.search(r"Keywords:\s*(.*)", doc)
     keywords = keyword_match.group(1).strip() if keyword_match else ""
 
@@ -61,6 +61,7 @@ def parse_document(doc, meta, idx):
         "method": method,
         "path": path,
         "purpose": purpose,
+        "description": description,
         "category": category,
         "URL": build_swagger_url(category, operation_id),
         "request_body": request_body,

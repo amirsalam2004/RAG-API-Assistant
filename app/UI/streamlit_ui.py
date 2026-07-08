@@ -46,7 +46,7 @@ def _card_html(api: dict, is_best: bool) -> str:
     )
 
     score_pct = int(api["score"] * 100)
-
+    
     return (
         f'<div style="border:{border};border-radius:10px;padding:16px 20px;'
         f'margin-bottom:16px;background:{bg};box-shadow:0 1px 5px rgba(0,0,0,0.08);'
@@ -60,8 +60,25 @@ def _card_html(api: dict, is_best: bool) -> str:
         f'{api["path"]}</span>'
         f'</div>'
 
-        f'<div style="color:#424242;font-size:14px;margin-bottom:10px;">'
-        f'{api["purpose"]}</div>'
+        # PURPOSE BOX
+        f'<div style="border:1px solid #64b5f6;border-radius:8px;padding:10px 12px;'
+        f'margin-bottom:10px;background:#e3f2fd;">'
+        f'<div style="font-size:12px;font-weight:700;color:#1565c0;margin-bottom:4px;">'
+        f'PURPOSE</div>'
+        f'<div style="color:#0d47a1;font-size:14px;">'
+        f'{api.get("purpose", "")}</div>'
+        f'</div>'
+
+        # DESCRIPTION BOX (ONLY if exists)
+        f'{(
+            f"<div style=\"border:1px solid #81c784;border-radius:8px;padding:10px 12px;"
+            f"margin-bottom:10px;background:#e8f5e9;\">"
+            f"<div style=\"font-size:12px;font-weight:700;color:#2e7d32;margin-bottom:4px;\">"
+            f"DESCRIPTION</div>"
+            f"<div style=\"color:#1b5e20;font-size:13px;line-height:1.6;\">"
+            f"{api.get('description')}</div>"
+            f"</div>"
+        ) if api.get("description") else ""}'
 
         f'<div style="margin-bottom:12px;">{_category_badge(api["category"])}</div>'
 
@@ -81,6 +98,45 @@ def _card_html(api: dict, is_best: bool) -> str:
 
         f'</div>'
     )
+
+    # return (
+    #     f'<div style="border:{border};border-radius:10px;padding:16px 20px;'
+    #     f'margin-bottom:16px;background:{bg};box-shadow:0 1px 5px rgba(0,0,0,0.08);'
+    #     f'color:#212121;">' 
+
+    #     f'{best_tag}'
+
+    #     f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
+    #     f'{_method_badge(api["method"])}'
+    #     f'<span style="font-family:monospace;font-size:15px;font-weight:600;color:#212121;">'
+    #     f'{api["path"]}</span>'
+    #     f'</div>'
+
+    #     f'<div style="color:#424242;font-size:14px;margin-bottom:10px;">'
+    #     f'{api["purpose"]}</div>'
+
+    #     f'<div style="color:#424242;font-size:14px;margin-bottom:10px;">'
+    #     f'{api.get("description", "")}</div>'
+
+    #     f'<div style="margin-bottom:12px;">{_category_badge(api["category"])}</div>'
+
+    #     f'<div style="font-size:13px;margin-bottom:6px;color:#212121;">'
+    #     f'<strong>Match score:</strong> {score_pct}%</div>'
+
+    #     f'<div style="background:#e0e0e0;border-radius:6px;height:8px;margin-bottom:12px;">'
+    #     f'<div style="background:#1976d2;width:{score_pct}%;height:8px;border-radius:6px;"></div>'
+    #     f'</div>'
+
+    #     f'<a href="{api["URL"]}" target="_blank" '
+    #     f'style="display:inline-block;padding:8px 16px;'
+    #     f'background:#263238;color:#ffffff;'
+    #     f'border-radius:6px;font-size:13px;font-weight:500;'
+    #     f'text-decoration:none;">'
+    #     f'View Swagger Docs &#8599;</a>'
+
+    #     f'</div>'
+    # )
+    
 
 def _render_api_cards(results: list):
     # Single st.markdown call — avoids Streamlit's per-call HTML sanitisation bug

@@ -183,7 +183,6 @@ def build_vector_documents(url):
 
     swagger = response.json()
 
-
     schemas = swagger.get("components", {}).get("schemas", {})
     # print(type(swagger)) #debug
     # print(swagger.keys()) #debug
@@ -198,8 +197,14 @@ def build_vector_documents(url):
             "text": doc,
             "metadata": {
                 "method": api["method"],
-                "path": api["path"]
+                "path": api["path"],
+                "operationId": api["operationId"],
+                "purpose": api["summary"],
+                "description": api["description"],
+                "tags": api["tags"],
+                "category": ", ".join(api.get("tags", [])),
             }
+
         })
 
     return documents
