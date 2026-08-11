@@ -1,6 +1,6 @@
 from openai import OpenAI
 import os
-from app.base_prompts import Description_Summarizer
+from app.base_prompts import translate_text_prompt, Description_Summarizer, detect_language_prompt
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,4 +43,35 @@ def generate_api_info(description, temperature=0):
         }
     )
 
+    return response.choices[0].message.content
+
+def detect_language(text):
+    response = client.chat.completions.create(
+        model="deepseek/deepseek-v4-flash",
+        messages=[
+            {"role": "system", "content": detect_language_prompt},
+            {"role": "user", "content": text }
+        ],
+        temperature=0,
+        extra_headers={
+            "HTTP-Referer": "http://localhost",
+            "X-Title": "RAG API Assistant"
+        }
+    )
+    return response.choices[0].message.content.strip().lower()
+
+def translate_text(text, target_lang):
+
+    response = client.chat.completions.create(
+        model="deepseek/deepseek-v4-flash",
+        messages=[
+            {"role": "system", "content": translate_text_prompt(target_lang)},
+            {"role": "user", "content": text}
+        ],
+        temperature=0,
+        extra_headers={
+            "HTTP-Referer": "http://localhost",
+            "X-Title": "RAG API Assistant"
+        }
+    )
     return response.choices[0].message.content

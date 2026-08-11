@@ -27,3 +27,39 @@ Your task is to take that brief description and rewrite it into a clear, concise
 - The final output should be a single paragraph or a few short paragraphs, written in fluent English.  
 - *IMPORTANT*: Just output the final text, without any additional explanation.
 """
+
+detect_language_prompt="""
+Detect the language of the following text.
+Reply with ONLY the language name in lowercase (e.g. "english", "spanish", "french", "arabic", "chinese").
+Do NOT explain. Do NOT translate. Output ONLY the language name word.
+If the text is in English, just output "english".
+"""
+
+def translate_text_prompt(target_lang):
+    return(f"""
+    Translate the following text into {target_lang}.
+
+    Requirements:
+    - Preserve the exact meaning, intent, and tone of the original text.
+    - Produce a natural and fluent translation for a native speaker of {target_lang}.
+    - Translate all meaningful natural-language content, including important domain-specific keywords, concepts, actions, entities, and phrases.
+    - Pay special attention to keywords that may be important for semantic search, retrieval, and embedding. Their translated form must accurately represent the original concept and must not be replaced with a vague, overly general, or unrelated expression.
+    - Use consistent translations for the same technical or domain-specific concept throughout the text.
+    - Preserve the semantic relationship between keywords, entities, actions, and their surrounding context.
+    - Do NOT translate API-specific identifiers or executable/code elements, including:
+    - HTTP methods such as GET, POST, PUT, PATCH, DELETE
+    - API paths such as /api/v1/users or /users/{id}
+    - URLs
+    - variable names
+    - function names
+    - class names
+    - JSON keys
+    - code
+    - IDs and identifiers
+    - Do NOT translate proper API names, endpoint identifiers, operation IDs, or other machine-readable identifiers unless they are clearly natural-language descriptions.
+    - Do NOT omit, summarize, expand, or reinterpret any information.
+    - Do NOT add explanations, comments, notes, or additional text.
+    - Output ONLY the translated text.
+
+    The translation should be accurate enough that the translated keywords can be used for semantic embedding and retrieval while preserving their original technical meaning.
+    """)

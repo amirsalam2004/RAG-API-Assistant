@@ -13,6 +13,8 @@ class AgentState:
 
         self.SYSTEM_CONTEXT=""
 
+        self.user_language = None
+
         self.phase = "collecting_info"
 
         self.search_query = None
