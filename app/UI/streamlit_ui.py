@@ -153,19 +153,278 @@ def _render_response(response):
         st.write(response)
 
 # App
-st.title("Rastar Center API Assistant")
-
-if "vectordb" not in st.session_state:
-    vectordb = VectorDB()
-    openapi_url = os.getenv("OPENAPI_SPEC_URL")
-    vectordb.ingest_from_url(openapi_url)
-    st.session_state.vectordb = vectordb
+st.title("Find the API!")
 
 if "state" not in st.session_state:
     st.session_state.state = AgentState()
 
+if "vectordb" not in st.session_state:
+    st.session_state.vectordb = None
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# # Setup form
+# if st.session_state.vectordb is None:
+#     st.subheader("Setup")
+#     openapi_url = st.text_input("OpenAPI Spec URL", placeholder="https://example.com/openapi.json")
+#     swagger_url = st.text_input("Swagger Base URL", placeholder="https://example.com/docs/#/")
+#     api_description = st.text_area("Describe the API system", placeholder="e.g. A platform for game and social features...")
+
+#     if st.button("Initialize"):
+#         if openapi_url and swagger_url and api_description:
+#             with st.spinner("Setting up..."):
+#                 st.session_state.state.initialize_openapi_url(openapi_url)
+#                 st.session_state.state.initialize_swagger_url(swagger_url)
+#                 st.session_state.state.initialize_SYSTEM_CONTEXT(api_description)
+
+#                 vectordb = VectorDB()
+#                 vectordb.reset_and_ingest(openapi_url)
+#                 st.session_state.vectordb = vectordb
+
+#             st.rerun()
+#         else:
+#             st.error("Please fill in all fields.")
+#     st.stop()
+
+# Setup form
+if st.session_state.vectordb is None:
+
+    # -----------------------------
+    # Custom styling
+    # -----------------------------
+    st.markdown("""
+    <style>
+        /* Main setup title */
+        .setup-title {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .setup-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .setup-title p {
+            color: #78909c;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Section labels */
+        .field-label {
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: #37474f;
+            margin-bottom: 0.35rem;
+        }
+
+        .field-hint {
+            font-size: 0.78rem;
+            color: #78909c;
+            margin-top: 0.25rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Info box */
+        .info-box {
+            background: #f1f7ff;
+            border-left: 4px solid #1976d2;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #455a64;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        /* Input fields */
+        div[data-testid="stTextInput"] input,
+        div[data-testid="stTextArea"] textarea {
+            border-radius: 8px;
+            border: 1px solid #cfd8dc;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        div[data-testid="stTextInput"] input:focus,
+        div[data-testid="stTextArea"] textarea:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.12);
+        }
+
+        /* Initialize button */
+        div[data-testid="stButton"] > button {
+            width: 100%;
+            border-radius: 8px;
+            border: none;
+            background: #1976d2;
+            color: white;
+            font-weight: 600;
+            padding: 0.65rem 1rem;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        div[data-testid="stButton"] > button:hover {
+            background: #1565c0;
+            transform: translateY(-1px);
+        }
+
+        /* Error message */
+        div[data-testid="stAlert"] {
+            border-radius: 8px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+
+    # -----------------------------
+    # Header
+    # -----------------------------
+    st.markdown("""
+        <div class="setup-title">
+            <h1>API Assistant Setup</h1>
+            <p>
+                Connect your OpenAPI specification and Swagger documentation
+                to initialize the assistant.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+
+    # -----------------------------
+    # Setup card
+    # -----------------------------
+    with st.container(border=True):
+
+        st.markdown("### API Configuration")
+
+        st.markdown("""
+            <div class="info-box">
+                <p>
+                    <strong>Quick Start:</strong>
+                    Provide the OpenAPI URL, Swagger documentation URL,
+                    and a short description of your API system.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+
+        # -------------------------
+        # URLs
+        # -------------------------
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown(
+                '<div class="field-label">OpenAPI Specification URL</div>',
+                unsafe_allow_html=True
+            )
+
+            openapi_url = st.text_input(
+                "OpenAPI Spec URL",
+                placeholder="https://example.com/openapi.json",
+                label_visibility="collapsed"
+            )
+
+            st.markdown(
+                '<div class="field-hint">'
+                'URL of the OpenAPI specification file.'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+        with col2:
+            st.markdown(
+                '<div class="field-label">Swagger Documentation URL</div>',
+                unsafe_allow_html=True
+            )
+
+            swagger_url = st.text_input(
+                "Swagger Base URL",
+                placeholder="https://example.com/docs/#/",
+                label_visibility="collapsed"
+            )
+
+            st.markdown(
+                '<div class="field-hint">'
+                'Base URL used to open the API documentation.'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+
+        # -------------------------
+        # API description
+        # -------------------------
+        st.markdown(
+            '<div class="field-label">API System Description</div>',
+            unsafe_allow_html=True
+        )
+
+        api_description = st.text_area(
+            "Describe the API system",
+            placeholder=(
+                "Example: A backend platform providing authentication, "
+                "user management, social features, and game-related APIs."
+            ),
+            label_visibility="collapsed",
+            height=110
+        )
+
+        st.markdown(
+            '<div class="field-hint">'
+            'Briefly describe what kind of APIs this system provides. '
+            'This information will be summarized and used as context by the assistant.'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+
+        # -------------------------
+        # Initialize
+        # -------------------------
+        if st.button("Initialize API Assistant", use_container_width=True):
+
+            if openapi_url and swagger_url and api_description:
+
+                with st.spinner("Initializing API Assistant..."):
+
+                    # Store configuration in state
+                    st.session_state.state.initialize_openapi_url(
+                        openapi_url
+                    )
+
+                    st.session_state.state.initialize_swagger_url(
+                        swagger_url
+                    )
+
+                    # Generate SYSTEM_CONTEXT
+                    st.session_state.state.initialize_SYSTEM_CONTEXT(
+                        api_description
+                    )
+
+                    # Create and populate vector database
+                    vectordb = VectorDB()
+                    vectordb.reset_and_ingest(openapi_url)
+
+                    st.session_state.vectordb = vectordb
+
+                st.rerun()
+
+            else:
+                st.error(
+                    "Please provide the OpenAPI URL, Swagger URL, "
+                    "and API description."
+                )
+
+    st.stop()
+
 
 # Render history
 for message in st.session_state.messages:

@@ -56,6 +56,10 @@ class VectorDB:
         documents = build_vector_documents(url)
         self.add_documents(documents)
 
+    def reset_and_ingest(self, url):
+        self.reset_collection()
+        self.ingest_from_url(url)
+
     def add_documents(self, documents):
 
         texts = [doc["text"] for doc in documents]

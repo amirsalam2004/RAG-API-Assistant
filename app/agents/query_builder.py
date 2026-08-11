@@ -30,7 +30,7 @@ def build_query(state):
     {format_messages(state.messages)}
 """
     
-    query = llm_call(prompt)
+    query = llm_call(state, prompt)
 
     state.search_query = query
     state.messages.append({"role": "Assistant", "content": "Generated query for search in vector database is: "+query})

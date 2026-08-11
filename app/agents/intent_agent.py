@@ -36,7 +36,7 @@ def intent_agent(state):
     Output nothing but JSON
 
 """
-    response = llm_call(prompt)
+    response = llm_call(state, prompt)
 
     try:
         intent = json.loads(response.strip())

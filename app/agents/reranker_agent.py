@@ -48,7 +48,7 @@ def reranker_agent(state):
     Output nothing but JSON.
     """
 
-    response = llm_call(prompt)
+    response = llm_call(state, prompt)
 
     ranked = json.loads(response)
 

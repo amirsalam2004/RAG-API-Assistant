@@ -1,18 +1,13 @@
 import re
-from dotenv import load_dotenv
-import os
 import urllib.parse
 
-load_dotenv()
-
-def build_swagger_url(category, operation_id):
+def build_swagger_url(category, operation_id, swagger_url):
     categoryURL=urllib.parse.quote(category, safe='')
-    swaggerURL=os.getenv("SWAGGER_URL")
-    return(swaggerURL+categoryURL+"/"+operation_id)
+    return(swagger_url+categoryURL+"/"+operation_id)
 
 
 
-def parse_document(doc, meta, idx):
+def parse_document(doc, meta, idx, swagger_url):
 
     lines = doc.strip().split("\n")
 
@@ -63,7 +58,7 @@ def parse_document(doc, meta, idx):
         "purpose": purpose,
         "description": description,
         "category": category,
-        "URL": build_swagger_url(category, operation_id),
+        "URL": build_swagger_url(category, operation_id, swagger_url),
         "request_body": request_body,
         "responses": responses,
         "keywords": keywords,
@@ -81,7 +76,7 @@ def retrieval_agent(state, vectordb):
     candidates = []
 
     for i, (doc, meta) in enumerate(zip(documents, metadatas)):
-        parsed = parse_document(doc, meta, i)
+        parsed = parse_document(doc, meta, i, state.swagger_url)
         candidates.append(parsed)
 
     state.candidates = candidates
