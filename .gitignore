@@ -9,3 +9,6 @@ __pycache__/
 
 # Environment variables 
 .env
+
+# Vector database
+chroma_db/
